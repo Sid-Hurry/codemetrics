@@ -8,7 +8,7 @@ export default function About() {
       {/* Title Header */}
       <div style={{ marginBottom: '1.75rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>
         <h2 style={{ fontSize: '1.4rem', fontWeight: '700', letterSpacing: '-0.3px', color: 'var(--text-primary)' }}>
-          About the Analyzer
+          About CodeMetrics
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
           An advanced evaluation platform that queries the public GitHub API to compute custom developer performance metrics, stored locally inside a persistent MySQL database.

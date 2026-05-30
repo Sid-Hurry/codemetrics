@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    console.log('🚀 Starting GitHub Profile Analyzer API server...');
+    console.log('Starting CodeMetrics API server...');
 
     // 1. Dynamic Database Check and Table Provisioning
     const dbInitialized = await initializeDatabase();

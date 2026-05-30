@@ -1,4 +1,4 @@
-# GitHub Profile & Performance Analyzer
+# CodeMetrics - Developer Performance Analyzer
 
 A full-stack, enterprise-grade developer evaluation platform designed to analyze, benchmark, and catalog public engineering profiles from the GitHub ecosystem. Built with a high-performance decoupled architecture, the platform couples a Node.js/Express REST API core with persistent MySQL storage and a minimalist, high-speed React dashboard.
 

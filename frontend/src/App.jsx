@@ -191,7 +191,7 @@ export default function App() {
       {/* Header bar */}
       <header className="app-header">
         <div className="brand-section">
-          <h1 className="brand-title">GitHub Profile Analyzer</h1>
+          <h1 className="brand-title">CodeMetrics</h1>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

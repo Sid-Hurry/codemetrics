@@ -40,9 +40,9 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'GitHub Profile Analyzer API',
+      title: 'CodeMetrics API',
       version: '1.0.0',
-      description: 'Production-ready Node.js API to fetch and analyze GitHub profiles, compute customized developer scores, and store details in a MySQL DB.',
+      description: 'Production-ready Node.js API to fetch and analyze GitHub profiles, compute customized developer scores, and store details in a MySQL DB utilizing CodeMetrics.',
       contact: {
         name: 'Developer Support',
         email: 'internship@example.com'
