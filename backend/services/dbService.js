@@ -12,7 +12,7 @@ const initializeDatabase = async () => {
   const user = process.env.DB_USER || process.env.MYSQLUSER || 'root';
   const password = process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '';
   const port = parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306', 10);
-  const dbName = process.env.DB_NAME || process.env.MYSQLDATABASE || 'github_profile_analyzer';
+  const dbName = process.env.DB_NAME || process.env.MYSQLDATABASE || 'codemetrics';
 
   let connection;
   try {
