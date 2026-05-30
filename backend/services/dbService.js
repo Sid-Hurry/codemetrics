@@ -8,11 +8,11 @@ dotenv.config();
  * Helps prevent startup crashes if tables or databases are not present.
  */
 const initializeDatabase = async () => {
-  const host = process.env.DB_HOST || '127.0.0.1';
-  const user = process.env.DB_USER || 'root';
-  const password = process.env.DB_PASSWORD || '';
-  const port = parseInt(process.env.DB_PORT || '3306', 10);
-  const dbName = process.env.DB_NAME || 'github_profile_analyzer';
+  const host = process.env.DB_HOST || process.env.MYSQLHOST || '127.0.0.1';
+  const user = process.env.DB_USER || process.env.MYSQLUSER || 'root';
+  const password = process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '';
+  const port = parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306', 10);
+  const dbName = process.env.DB_NAME || process.env.MYSQLDATABASE || 'github_profile_analyzer';
 
   let connection;
   try {
