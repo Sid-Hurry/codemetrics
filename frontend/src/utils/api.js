@@ -3,7 +3,11 @@
  * Leverages Vite's built-in proxy in dev mode to avoid CORS errors.
  */
 
-const BASE_API_URL = import.meta.env.VITE_API_URL || '/api';
+let rawApiUrl = import.meta.env.VITE_API_URL || '/api';
+if (rawApiUrl && !rawApiUrl.startsWith('/') && !rawApiUrl.startsWith('http://') && !rawApiUrl.startsWith('https://')) {
+  rawApiUrl = 'https://' + rawApiUrl;
+}
+const BASE_API_URL = rawApiUrl;
 
 /**
  * Custom error handler for API responses
