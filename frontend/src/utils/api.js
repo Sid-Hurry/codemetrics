@@ -4,9 +4,17 @@
  */
 
 let rawApiUrl = import.meta.env.VITE_API_URL || '/api';
+
+// 1. If absolute URL lacks protocol, prepend https://
 if (rawApiUrl && !rawApiUrl.startsWith('/') && !rawApiUrl.startsWith('http://') && !rawApiUrl.startsWith('https://')) {
   rawApiUrl = 'https://' + rawApiUrl;
 }
+
+// 2. If the user provided the base domain only (missing the '/api' suffix), append it automatically
+if (rawApiUrl && rawApiUrl.startsWith('http') && !rawApiUrl.endsWith('/api') && !rawApiUrl.includes('/api/')) {
+  rawApiUrl = rawApiUrl.endsWith('/') ? rawApiUrl + 'api' : rawApiUrl + '/api';
+}
+
 const BASE_API_URL = rawApiUrl;
 
 /**
