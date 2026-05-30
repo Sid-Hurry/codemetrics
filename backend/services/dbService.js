@@ -16,22 +16,31 @@ const initializeDatabase = async () => {
 
   let connection;
   try {
-    // 1. Establish connection to MySQL server without database selected
-    connection = await mysql.createConnection({
-      host,
-      user,
-      password,
-      port
-    });
-
     console.log('🔄 Checking database and provisioning tables...');
 
-    // 2. Create database if it does not exist
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-    console.log(`✅ Database "${dbName}" verified or created.`);
-
-    // 3. Select database
-    await connection.query(`USE \`${dbName}\`;`);
+    // 1. Try to connect directly to the database first (supports cloud environments like Railway)
+    try {
+      connection = await mysql.createConnection({
+        host,
+        user,
+        password,
+        port,
+        database: dbName
+      });
+      console.log(`✅ Connected directly to database "${dbName}".`);
+    } catch (directError) {
+      // 2. Fallback: Connect without database and try to create it (for local setups)
+      console.log(`Database "${dbName}" not found or direct connection failed. Attempting bootstrap...`);
+      connection = await mysql.createConnection({
+        host,
+        user,
+        password,
+        port
+      });
+      await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+      console.log(`✅ Database "${dbName}" created.`);
+      await connection.query(`USE \`${dbName}\`;`);
+    }
 
     // 4. Create profiles table
     const createTableQuery = `
