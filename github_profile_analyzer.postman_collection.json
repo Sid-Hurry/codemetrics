@@ -1,0 +1,169 @@
+{
+  "info": {
+    "_postman_id": "a9efbde3-6fc9-4702-8f92-7489ff6ef1e1",
+    "name": "GitHub Profile Analyzer API",
+    "description": "Postman Collection to test all available endpoints in the GitHub Profile Analyzer API internship project.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Analyze GitHub Profile",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/analyze/:username",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "analyze",
+            ":username"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "torvalds",
+              "description": "GitHub login username to fetch, analyze, and save (e.g. torvalds, gaearon, yyx990803)"
+            }
+          ]
+        },
+        "description": "Fetches raw profile & repository data from GitHub, computes Developer Score, total stars/forks, and stores/upserts it inside the MySQL database."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get All Analyzed Profiles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/profiles?page=1&limit=10&sortBy=developer_score&order=DESC&search=",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "profiles"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1",
+              "description": "Pagination page number (default: 1)"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Number of profiles per page (default: 10)"
+            },
+            {
+              "key": "sortBy",
+              "value": "developer_score",
+              "description": "Attribute column to sort by: created_at, developer_score, total_stars, username (default: created_at)"
+            },
+            {
+              "key": "order",
+              "value": "DESC",
+              "description": "Sorting direction: ASC or DESC (default: DESC)"
+            },
+            {
+              "key": "search",
+              "value": "",
+              "description": "Optional search term matching username, name or location"
+            }
+          ]
+        },
+        "description": "Returns paginated list of analyzed profiles with dynamic sorting, page limits, and text search options."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Get Single Stored Profile",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/profiles/:username",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "profiles",
+            ":username"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "torvalds",
+              "description": "GitHub username previously analyzed"
+            }
+          ]
+        },
+        "description": "Queries the local MySQL database for a specific profile and returns the record if found, otherwise returns a 404 error."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Delete Analyzed Profile",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/profiles/:username",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "profiles",
+            ":username"
+          ],
+          "variable": [
+            {
+              "key": "username",
+              "value": "torvalds",
+              "description": "GitHub username to purge from local records"
+            }
+          ]
+        },
+        "description": "Deletes the analyzed profile profile from the local MySQL database."
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}
