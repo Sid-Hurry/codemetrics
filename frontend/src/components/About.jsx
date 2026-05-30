@@ -15,7 +15,7 @@ export default function About() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem', flexWrap: 'wrap' }}>
+      <div className="about-grid">
         
         {/* Left Column: Metric Formula */}
         <div>

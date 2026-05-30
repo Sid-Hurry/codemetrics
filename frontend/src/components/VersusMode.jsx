@@ -40,7 +40,7 @@ export default function VersusMode({ profiles = [] }) {
       </div>
 
       {/* Selectors */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div className="duel-selectors-grid">
         <div>
           <label style={{ display: 'block', fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '0.5rem', letterSpacing: '0.5px' }}>
             Developer A
@@ -109,7 +109,7 @@ export default function VersusMode({ profiles = [] }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           {/* Profiles Cards Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="duel-profiles-grid">
             {/* Developer A Card */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: 'var(--border-radius-md)' }}>
               <img

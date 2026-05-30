@@ -232,25 +232,26 @@ export default function App() {
 
       {/* Main Tab Views Routing */}
       {activeTab === 'dashboard' && (
-        <div className="dashboard-grid">
+        <div className="dashboard-layout">
           
-          {/* Left Panel: Search & Rating Gauge */}
-          <div className="dashboard-left-panel">
+          {/* Top Search Bar */}
+          <div className="top-search-section">
             <SearchBar onSearch={handleAnalyze} isLoading={isLoadingProfile} />
-            
-            {selectedProfile && !isLoadingProfile && (
-              <ScoreGauge score={selectedProfile.developer_score} />
-            )}
           </div>
 
-          {/* Right Panel: Detailed Metrics Panels & History */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            
-            {isLoadingProfile ? (
-              <SkeletonLoader />
-            ) : selectedProfile ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '2rem', flexWrap: 'wrap' }}>
+          {/* Dashboard Content Panel */}
+          {isLoadingProfile ? (
+            <SkeletonLoader />
+          ) : selectedProfile ? (
+            <div className="dashboard-main-content">
+              {/* Left Column: Profile & Score */}
+              <div className="dashboard-column-left">
                 <ProfileSummary profile={selectedProfile} addToast={addToast} />
+                <ScoreGauge score={selectedProfile.developer_score} />
+              </div>
+
+              {/* Right Column: Insights & History */}
+              <div className="dashboard-column-right">
                 <RepoHighlights
                   totalStars={selectedProfile.total_stars}
                   totalForks={selectedProfile.total_forks}
@@ -260,37 +261,53 @@ export default function App() {
                   publicRepos={selectedProfile.public_repos}
                   publicGists={selectedProfile.public_gists}
                 />
+                
+                <HistoryTable
+                  profiles={historyProfiles}
+                  pagination={pagination}
+                  onPageChange={setPage}
+                  onSort={handleSort}
+                  onDelete={handleDelete}
+                  onSelect={handleSelect}
+                  sortBy={sortBy}
+                  order={order}
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  isTableLoading={isTableLoading}
+                />
               </div>
-            ) : (
-              <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', textAlign: 'center', padding: '3rem 2rem' }}>
+            </div>
+          ) : (
+            /* Welcome / Empty State with History visible underneath */
+            <div className="dashboard-empty-content">
+              <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '260px', textAlign: 'center', padding: '3rem 2rem', marginBottom: '2rem' }}>
                 <BarChart3 size={40} style={{ color: 'var(--accent-secondary)', marginBottom: '1.25rem' }} />
                 <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '0.5rem' }}>Start Analyzing GitHub Profiles</h3>
-                <p style={{ color: 'var(--text-secondary)', maxWidth: '460px', fontSize: '0.9rem' }}>
-                  Enter a GitHub username in the search input on the left to extract custom developer evaluations, aggregate stars and forks count, and fetch visual repository analytics.
+                <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', fontSize: '0.9rem' }}>
+                  Enter a GitHub username in the search input above to extract custom developer evaluations, aggregate stars and forks count, and fetch visual repository analytics.
                 </p>
               </div>
-            )}
 
-            {/* Historical analysis logs table */}
-            <HistoryTable
-              profiles={historyProfiles}
-              pagination={pagination}
-              onPageChange={setPage}
-              onSort={handleSort}
-              onDelete={handleDelete}
-              onSelect={handleSelect}
-              sortBy={sortBy}
-              order={order}
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              isTableLoading={isTableLoading}
-            />
-          </div>
+              <HistoryTable
+                profiles={historyProfiles}
+                pagination={pagination}
+                onPageChange={setPage}
+                onSort={handleSort}
+                onDelete={handleDelete}
+                onSelect={handleSelect}
+                sortBy={sortBy}
+                order={order}
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                isTableLoading={isTableLoading}
+              />
+            </div>
+          )}
         </div>
       )}
 
       {activeTab === 'compare' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div className="compare-tab-panel">
           <VersusMode profiles={allProfiles} />
           
           <HistoryTable

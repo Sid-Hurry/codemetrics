@@ -25,9 +25,12 @@
   --accent-error: #f43f5e; /* Crisp Coral Red */
   
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --transition-clean: all 0.2s ease;
+  --transition-clean: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
   --border-radius-lg: 8px; /* Clean crisp geometric corners */
   --border-radius-md: 6px;
+  
+  /* Standard Spacing Variables */
+  --layout-gap: 2rem;
 }
 
 /* Light Theme Variables Override - Premium Paper Tech */
@@ -85,7 +88,14 @@ body {
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 1.5rem 1.25rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .app-container {
+    padding: 3rem 2.5rem;
+  }
 }
 
 /* Header & Theme Control */
@@ -165,22 +175,106 @@ body {
   color: var(--text-secondary);
 }
 
-/* Core Dashboard Layout Grid */
-.dashboard-grid {
+/* New Standardized 2-Column Dashboard Layout */
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-gap);
+}
+
+.top-search-section {
+  width: 100%;
+}
+
+.dashboard-main-content {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2.5rem;
+  gap: var(--layout-gap);
+}
+
+.dashboard-column-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-gap);
+  align-self: start;
+  width: 100%;
+  min-width: 0;
+}
+
+.dashboard-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-gap);
+  width: 100%;
+  min-width: 0;
+}
+
+.dashboard-empty-content {
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: 340px 1fr;
+  .dashboard-main-content {
+    grid-template-columns: 1.1fr 1.9fr;
+  }
+}
+
+/* Detailed Profile & Highlights Sub-Grid */
+.details-sub-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--layout-gap);
+}
+
+@media (min-width: 1200px) {
+  .details-sub-grid {
+    grid-template-columns: 1fr 1.2fr;
+  }
+}
+
+/* Versus Mode Duel Grid Layouts */
+.compare-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--layout-gap);
+}
+
+.duel-selectors-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.duel-profiles-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .duel-selectors-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
   }
   
-  .dashboard-left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
+  .duel-profiles-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* About Page Custom Responsive Grid */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--layout-gap);
+}
+
+@media (min-width: 1200px) {
+  .about-grid {
+    grid-template-columns: 1.2fr 1fr;
   }
 }
 
@@ -190,8 +284,14 @@ body {
   border: 1px solid var(--glass-border);
   border-radius: var(--border-radius-lg);
   box-shadow: 0 4px 20px var(--glass-shadow);
-  padding: 2rem;
+  padding: 1.25rem;
   transition: var(--transition-clean);
+}
+
+@media (min-width: 768px) {
+  .glass-card {
+    padding: 2rem;
+  }
 }
 
 .glass-card:hover {

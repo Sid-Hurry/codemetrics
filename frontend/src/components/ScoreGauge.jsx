@@ -36,7 +36,7 @@ const ScoreGauge = React.memo(({ score }) => {
   }, [score]);
 
   return (
-    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'center' }}>
+    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       <h3 className="search-widget-title" style={{ width: '100%', justifyContent: 'center' }}>
         Developer Rating
       </h3>
