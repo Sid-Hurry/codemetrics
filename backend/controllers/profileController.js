@@ -1,22 +1,20 @@
 const githubService = require('../services/githubService');
 const profileModel = require('../models/profileModel');
-const { calculateRepoInsights, calculateDeveloperScore } = require('../utils/scoreCalculator');
+const aiService = require('../services/aiService');
+const { calculateRepoInsights, calculateProfileCompleteness, calculateDeveloperScore } = require('../utils/scoreCalculator');
+const { pool } = require('../config/db');
 
-/**
- * Controller to handle all profile analysis and retrieval actions
- */
 class ProfileController {
   /**
-   * Triggers fetching, metrics calculation, and DB upsert of a GitHub profile
+   * Triggers fetching, metrics calculation, AI insight generation, and DB upsert of a GitHub profile.
    * POST /api/analyze/:username
    */
   async analyzeProfile(req, res, next) {
     try {
       let { username } = req.params;
 
-      // 1. Basic validation
       if (!username || !username.trim()) {
-        const err = new Error('Username parameter is required and cannot be empty.');
+        const err = new Error('Username parameter is required.');
         err.status = 400;
         return next(err);
       }
@@ -31,9 +29,9 @@ class ProfileController {
         return next(err);
       }
 
-      console.log(`🔍 Starting analysis for GitHub username: "${username}"`);
+      console.log(`🔍 Starting user-specific analysis for: "${username}" (User ID: ${req.user.id})`);
 
-      // 2. Fetch data from GitHub concurrently to minimize API round-trip times
+      // 1. Fetch raw data from GitHub concurrently
       let rawProfile;
       let rawRepos = [];
 
@@ -46,21 +44,80 @@ class ProfileController {
         rawProfile = profileResponse;
         rawRepos = reposResponse;
       } catch (apiError) {
-        // Pass standard GitHub API failures directly (404 not found, 403 rate limit)
         return next(apiError);
       }
 
-      // 3. Compute Insights
+      // 2. Compute Insights
       const insights = calculateRepoInsights(rawRepos);
+      const completeness = calculateProfileCompleteness(rawProfile);
       const developerScore = calculateDeveloperScore(
         rawProfile.followers,
-        rawProfile.public_repos,
+        rawRepos.length,
         insights.totalStars,
-        insights.totalForks
+        insights.totalForks,
+        completeness
       );
 
-      // 4. Construct payload for database
+      // Check if profile was already analyzed by this user
+      const existingProfile = await profileModel.getByUsername(username, req.user.id);
+
+      let aiSummary = null;
+      let aiStrengths = null;
+      let aiImprovements = null;
+      let aiSkillAssessment = null;
+      let aiCareerPath = null;
+      let aiGeneratedAt = null;
+
+      // Create a temporary data payload for prompt creation
+      const profilePayloadForAI = {
+        username: rawProfile.login.toLowerCase(),
+        name: rawProfile.name,
+        bio: rawProfile.bio,
+        location: rawProfile.location,
+        followers: rawProfile.followers,
+        following: rawProfile.following,
+        public_repos: rawProfile.public_repos,
+        public_gists: rawProfile.public_gists,
+        total_stars: insights.totalStars,
+        total_forks: insights.totalForks,
+        average_stars_per_repo: insights.averageStarsPerRepo,
+        average_forks_per_repo: insights.averageForksPerRepo,
+        top_languages: insights.topLanguages,
+        language_distribution: insights.languageDistribution,
+        most_starred_repo: insights.mostStarredRepo,
+        most_starred_repo_stars: insights.mostStarredRepoStars,
+        most_forked_repo: insights.mostForkedRepo,
+        most_forked_repo_forks: insights.mostForkedRepoForks,
+        developer_score: developerScore,
+        profile_completeness_score: completeness
+      };
+
+      // 3. AI analysis triggering
+      if (existingProfile && existingProfile.ai_summary) {
+        // Reuse cached AI insights
+        aiSummary = existingProfile.ai_summary;
+        aiStrengths = existingProfile.ai_strengths;
+        aiImprovements = existingProfile.ai_improvements;
+        aiSkillAssessment = existingProfile.ai_skill_assessment;
+        aiCareerPath = existingProfile.ai_career_path;
+        aiGeneratedAt = existingProfile.ai_generated_at;
+        console.log(`♻️ Reusing cached AI insights for profile: ${username}`);
+      } else {
+        // Generate new AI insights
+        console.log(`🤖 Generating fresh AI insights for profile: ${username}`);
+        const aiInsights = await aiService.generateProfileInsights(profilePayloadForAI);
+        
+        aiSummary = aiInsights.summary;
+        aiStrengths = aiInsights.strengths;
+        aiImprovements = aiInsights.improvements;
+        aiSkillAssessment = aiInsights.skill_assessment;
+        aiCareerPath = aiInsights.career_path;
+        aiGeneratedAt = new Date();
+      }
+
+      // 4. Construct payload for database upsert
       const profileData = {
+        user_id: req.user.id,
         username: rawProfile.login.toLowerCase(),
         name: rawProfile.name || null,
         bio: rawProfile.bio || null,
@@ -69,21 +126,40 @@ class ProfileController {
         following: rawProfile.following || 0,
         public_repos: rawProfile.public_repos || 0,
         public_gists: rawProfile.public_gists || 0,
-        account_created_at: rawProfile.created_at ? rawProfile.created_at.substring(0, 19).replace('T', ' ') : null, // Convert ISO to MySQL DATETIME
+        account_created_at: rawProfile.created_at ? rawProfile.created_at.substring(0, 19).replace('T', ' ') : null,
         profile_url: rawProfile.html_url || null,
         avatar_url: rawProfile.avatar_url || null,
+        
         total_stars: insights.totalStars,
         total_forks: insights.totalForks,
         most_starred_repo: insights.mostStarredRepo,
         most_starred_repo_stars: insights.mostStarredRepoStars,
-        developer_score: developerScore
+        most_forked_repo: insights.mostForkedRepo,
+        most_forked_repo_forks: insights.mostForkedRepoForks,
+        average_stars_per_repo: insights.averageStarsPerRepo,
+        average_forks_per_repo: insights.averageForksPerRepo,
+        profile_completeness_score: completeness,
+        top_languages: insights.topLanguages,
+        language_distribution: insights.languageDistribution,
+        developer_score: developerScore,
+
+        ai_summary: aiSummary,
+        ai_strengths: aiStrengths,
+        ai_improvements: aiImprovements,
+        ai_skill_assessment: aiSkillAssessment,
+        ai_career_path: aiCareerPath,
+        ai_generated_at: aiGeneratedAt ? (typeof aiGeneratedAt === 'string' ? aiGeneratedAt : aiGeneratedAt.toISOString().slice(0, 19).replace('T', ' ')) : null
       };
 
-      // 5. Store / Upsert in MySQL database
+      // 5. Store / Upsert in database
       await profileModel.upsertProfile(profileData);
 
-      // 6. Fetch final saved record from DB to verify structure
-      const savedRecord = await profileModel.getByUsername(username);
+      // 6. Automatically log this to search history
+      const logSearchQuery = 'INSERT INTO search_history (user_id, username) VALUES (?, ?);';
+      await pool.execute(logSearchQuery, [req.user.id, rawProfile.login.toLowerCase()]);
+
+      // 7. Fetch finalized saved record
+      const savedRecord = await profileModel.getByUsername(username, req.user.id);
 
       console.log(`✨ Successfully analyzed and saved profile: "${username}"`);
 
@@ -98,7 +174,7 @@ class ProfileController {
   }
 
   /**
-   * Retrieves all analyzed profiles with search, pagination, and sorting
+   * Retrieves all analyzed profiles in the user's workspace
    * GET /api/profiles
    */
   async getAllProfiles(req, res, next) {
@@ -110,7 +186,8 @@ class ProfileController {
         limit,
         sortBy,
         order,
-        search
+        search,
+        userId: req.user.id
       });
 
       return res.status(200).json({
@@ -124,7 +201,7 @@ class ProfileController {
   }
 
   /**
-   * Retrieves a single analyzed profile from the local DB
+   * Retrieves a single analyzed profile from user's workspace
    * GET /api/profiles/:username
    */
   async getProfileByUsername(req, res, next) {
@@ -137,10 +214,10 @@ class ProfileController {
         return next(err);
       }
 
-      const profile = await profileModel.getByUsername(username.trim());
+      const profile = await profileModel.getByUsername(username.trim(), req.user.id);
 
       if (!profile) {
-        const err = new Error(`Profile for "${username}" has not been analyzed yet. Run analysis first.`);
+        const err = new Error(`Profile for "${username}" has not been analyzed yet.`);
         err.status = 404;
         return next(err);
       }
@@ -155,7 +232,7 @@ class ProfileController {
   }
 
   /**
-   * Deletes an analyzed profile record from local DB
+   * Deletes an analyzed profile record from user's workspace
    * DELETE /api/profiles/:username
    */
   async deleteProfile(req, res, next) {
@@ -168,17 +245,17 @@ class ProfileController {
         return next(err);
       }
 
-      const wasDeleted = await profileModel.deleteByUsername(username.trim());
+      const wasDeleted = await profileModel.deleteByUsername(username.trim(), req.user.id);
 
       if (!wasDeleted) {
-        const err = new Error(`Profile for "${username}" not found in our records.`);
+        const err = new Error(`Profile for "${username}" not found in your records.`);
         err.status = 404;
         return next(err);
       }
 
       return res.status(200).json({
         success: true,
-        message: `Profile "${username}" was deleted successfully.`
+        message: `Profile "${username}" deleted successfully.`
       });
     } catch (error) {
       next(error);

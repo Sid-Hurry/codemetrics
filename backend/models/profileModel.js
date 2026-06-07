@@ -2,18 +2,22 @@ const { pool } = require('../config/db');
 
 class ProfileModel {
   /**
-   * Upserts (insert or update on duplicate key) a analyzed profile record.
+   * Upserts (insert or update on duplicate key) an analyzed profile record.
    * @param {Object} profile 
    * @returns {Object} Database insertion result metadata
    */
   async upsertProfile(profile) {
     const query = `
       INSERT INTO github_profiles (
-        username, name, bio, location, followers, following, 
+        user_id, username, name, bio, location, followers, following, 
         public_repos, public_gists, account_created_at, profile_url, avatar_url,
         total_stars, total_forks, most_starred_repo, most_starred_repo_stars,
-        developer_score, analysis_date
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        most_forked_repo, most_forked_repo_forks, average_stars_per_repo,
+        average_forks_per_repo, profile_completeness_score, top_languages,
+        language_distribution, developer_score, ai_summary, ai_strengths,
+        ai_improvements, ai_skill_assessment, ai_career_path, ai_generated_at,
+        analysis_date
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
       ON DUPLICATE KEY UPDATE
         name = VALUES(name),
         bio = VALUES(bio),
@@ -29,11 +33,25 @@ class ProfileModel {
         total_forks = VALUES(total_forks),
         most_starred_repo = VALUES(most_starred_repo),
         most_starred_repo_stars = VALUES(most_starred_repo_stars),
+        most_forked_repo = VALUES(most_forked_repo),
+        most_forked_repo_forks = VALUES(most_forked_repo_forks),
+        average_stars_per_repo = VALUES(average_stars_per_repo),
+        average_forks_per_repo = VALUES(average_forks_per_repo),
+        profile_completeness_score = VALUES(profile_completeness_score),
+        top_languages = VALUES(top_languages),
+        language_distribution = VALUES(language_distribution),
         developer_score = VALUES(developer_score),
+        ai_summary = VALUES(ai_summary),
+        ai_strengths = VALUES(ai_strengths),
+        ai_improvements = VALUES(ai_improvements),
+        ai_skill_assessment = VALUES(ai_skill_assessment),
+        ai_career_path = VALUES(ai_career_path),
+        ai_generated_at = VALUES(ai_generated_at),
         analysis_date = NOW();
     `;
 
     const values = [
+      profile.user_id,
       profile.username.toLowerCase(),
       profile.name || null,
       profile.bio || null,
@@ -49,7 +67,20 @@ class ProfileModel {
       profile.total_forks || 0,
       profile.most_starred_repo || '',
       profile.most_starred_repo_stars || 0,
-      profile.developer_score || 0
+      profile.most_forked_repo || '',
+      profile.most_forked_repo_forks || 0,
+      profile.average_stars_per_repo || 0.00,
+      profile.average_forks_per_repo || 0.00,
+      profile.profile_completeness_score || 0,
+      profile.top_languages || '',
+      profile.language_distribution ? JSON.stringify(profile.language_distribution) : null,
+      profile.developer_score || 0,
+      profile.ai_summary || null,
+      profile.ai_strengths ? JSON.stringify(profile.ai_strengths) : null,
+      profile.ai_improvements ? JSON.stringify(profile.ai_improvements) : null,
+      profile.ai_skill_assessment ? JSON.stringify(profile.ai_skill_assessment) : null,
+      profile.ai_career_path || null,
+      profile.ai_generated_at || null
     ];
 
     const [result] = await pool.execute(query, values);
@@ -57,11 +88,9 @@ class ProfileModel {
   }
 
   /**
-   * Fetches paginated, sorted, and filtered profiles.
-   * Prevents SQL injection by whitelisting fields.
+   * Fetches paginated, sorted, and filtered profiles for a specific user.
    */
-  async getAllProfiles({ page = 1, limit = 10, sortBy = 'created_at', order = 'DESC', search = '' }) {
-    // 1. Whitelist sorting columns and directions to secure against SQL injection
+  async getAllProfiles({ page = 1, limit = 10, sortBy = 'created_at', order = 'DESC', search = '', userId }) {
     const allowedSortFields = [
       'id', 'username', 'name', 'followers', 'following', 
       'public_repos', 'total_stars', 'total_forks', 
@@ -76,25 +105,23 @@ class ProfileModel {
     const parsedPage = Math.max(1, parseInt(page, 10) || 1);
     const offset = (parsedPage - 1) * parsedLimit;
 
-    let query = 'SELECT * FROM github_profiles';
-    let countQuery = 'SELECT COUNT(*) as total FROM github_profiles';
-    const queryParams = [];
-    const countParams = [];
+    let query = 'SELECT * FROM github_profiles WHERE user_id = ?';
+    let countQuery = 'SELECT COUNT(*) as total FROM github_profiles WHERE user_id = ?';
+    const queryParams = [userId];
+    const countParams = [userId];
 
-    // 2. Append search filter if present
     if (search.trim()) {
       const searchPattern = `%${search.trim().toLowerCase()}%`;
-      query += ' WHERE username LIKE ? OR name LIKE ? OR location LIKE ?';
-      countQuery += ' WHERE username LIKE ? OR name LIKE ? OR location LIKE ?';
+      const searchFilter = ' AND (username LIKE ? OR name LIKE ? OR location LIKE ?)';
+      query += searchFilter;
+      countQuery += searchFilter;
       queryParams.push(searchPattern, searchPattern, searchPattern);
       countParams.push(searchPattern, searchPattern, searchPattern);
     }
 
-    // 3. Append order and pagination limits
     query += ` ORDER BY ${safeSortBy} ${safeOrder} LIMIT ? OFFSET ?`;
     queryParams.push(parsedLimit, offset);
 
-    // 4. Run queries concurrently for efficiency
     const [
       [countRows],
       [rows]
@@ -106,8 +133,25 @@ class ProfileModel {
     const totalCount = countRows[0].total;
     const totalPages = Math.ceil(totalCount / parsedLimit);
 
+    // Parse JSON columns
+    const parsedProfiles = rows.map(row => {
+      if (row.language_distribution && typeof row.language_distribution === 'string') {
+        try { row.language_distribution = JSON.parse(row.language_distribution); } catch (_) {}
+      }
+      if (row.ai_strengths && typeof row.ai_strengths === 'string') {
+        try { row.ai_strengths = JSON.parse(row.ai_strengths); } catch (_) {}
+      }
+      if (row.ai_improvements && typeof row.ai_improvements === 'string') {
+        try { row.ai_improvements = JSON.parse(row.ai_improvements); } catch (_) {}
+      }
+      if (row.ai_skill_assessment && typeof row.ai_skill_assessment === 'string') {
+        try { row.ai_skill_assessment = JSON.parse(row.ai_skill_assessment); } catch (_) {}
+      }
+      return row;
+    });
+
     return {
-      profiles: rows,
+      profiles: parsedProfiles,
       pagination: {
         totalCount,
         totalPages,
@@ -118,24 +162,36 @@ class ProfileModel {
   }
 
   /**
-   * Retrieves an analyzed profile by username.
-   * @param {string} username 
-   * @returns {Object|null}
+   * Retrieves an analyzed profile by username and user ID.
    */
-  async getByUsername(username) {
-    const query = 'SELECT * FROM github_profiles WHERE username = ?';
-    const [rows] = await pool.execute(query, [username.toLowerCase()]);
-    return rows.length > 0 ? rows[0] : null;
+  async getByUsername(username, userId) {
+    const query = 'SELECT * FROM github_profiles WHERE user_id = ? AND username = ?';
+    const [rows] = await pool.execute(query, [userId, username.toLowerCase().trim()]);
+    
+    if (rows.length === 0) return null;
+
+    const row = rows[0];
+    if (row.language_distribution && typeof row.language_distribution === 'string') {
+      try { row.language_distribution = JSON.parse(row.language_distribution); } catch (_) {}
+    }
+    if (row.ai_strengths && typeof row.ai_strengths === 'string') {
+      try { row.ai_strengths = JSON.parse(row.ai_strengths); } catch (_) {}
+    }
+    if (row.ai_improvements && typeof row.ai_improvements === 'string') {
+      try { row.ai_improvements = JSON.parse(row.ai_improvements); } catch (_) {}
+    }
+    if (row.ai_skill_assessment && typeof row.ai_skill_assessment === 'string') {
+      try { row.ai_skill_assessment = JSON.parse(row.ai_skill_assessment); } catch (_) {}
+    }
+    return row;
   }
 
   /**
-   * Deletes an analyzed profile by username.
-   * @param {string} username 
-   * @returns {boolean} True if successfully deleted
+   * Deletes an analyzed profile record from a user's workspace.
    */
-  async deleteByUsername(username) {
-    const query = 'DELETE FROM github_profiles WHERE username = ?';
-    const [result] = await pool.execute(query, [username.toLowerCase()]);
+  async deleteByUsername(username, userId) {
+    const query = 'DELETE FROM github_profiles WHERE user_id = ? AND username = ?';
+    const [result] = await pool.execute(query, [userId, username.toLowerCase().trim()]);
     return result.affectedRows > 0;
   }
 }

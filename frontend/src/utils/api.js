@@ -1,85 +1,239 @@
-/**
- * Frontend API Utility to communicate with the Backend Express Service.
- * Leverages Vite's built-in proxy in dev mode to avoid CORS errors.
- */
+import axios from 'axios';
 
-let rawApiUrl = import.meta.env.VITE_API_URL || '/api';
+// 1. Resolve backend target endpoint base URL
+let baseURL = import.meta.env.VITE_API_URL || '/api';
 
-// 1. If absolute URL lacks protocol, prepend https://
-if (rawApiUrl && !rawApiUrl.startsWith('/') && !rawApiUrl.startsWith('http://') && !rawApiUrl.startsWith('https://')) {
-  rawApiUrl = 'https://' + rawApiUrl;
+if (baseURL && !baseURL.startsWith('/') && !baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
+  baseURL = 'https://' + baseURL;
 }
 
-// 2. If the user provided the base domain only (missing the '/api' suffix), append it automatically
-if (rawApiUrl && rawApiUrl.startsWith('http') && !rawApiUrl.endsWith('/api') && !rawApiUrl.includes('/api/')) {
-  rawApiUrl = rawApiUrl.endsWith('/') ? rawApiUrl + 'api' : rawApiUrl + '/api';
+if (baseURL && baseURL.startsWith('http') && !baseURL.endsWith('/api') && !baseURL.includes('/api/')) {
+  baseURL = baseURL.endsWith('/') ? baseURL + 'api' : baseURL + '/api';
 }
 
-const BASE_API_URL = rawApiUrl;
-
-/**
- * Custom error handler for API responses
- */
-const handleResponse = async (response) => {
-  const data = await response.json().catch(() => ({}));
-  
-  if (!response.ok) {
-    const errorMsg = data.message || `Request failed with status ${response.status}`;
-    const error = new Error(errorMsg);
-    error.status = response.status;
-    throw error;
+// 2. Instantiate Axios client
+const client = axios.create({
+  baseURL,
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json'
   }
+});
+
+// 3. Attach token interceptor
+client.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Helper to format Axios errors
+const parseError = (err) => {
+  const message = err.response && err.response.data && err.response.data.message
+    ? err.response.data.message
+    : err.message || 'Request failed';
+  const status = err.response ? err.response.status : null;
   
-  return data;
+  const errorObj = new Error(message);
+  errorObj.status = status;
+  return errorObj;
 };
 
+// 4. API Endpoints Map
 export const api = {
-  /**
-   * Dispatches username to backend to run analytics
-   * @param {string} username 
-   * @returns {Promise<Object>} Analyzed record data
-   */
+  // Authentication
+  async register(name, email, password) {
+    try {
+      const res = await client.post('/auth/register', { name, email, password });
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async login(email, password) {
+    try {
+      const res = await client.post('/auth/login', { email, password });
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async logout() {
+    try {
+      const res = await client.post('/auth/logout');
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async getMe() {
+    try {
+      const res = await client.get('/auth/me');
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  // GitHub Profiles
   async analyzeProfile(username) {
-    const response = await fetch(`${BASE_API_URL}/analyze/${encodeURIComponent(username)}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return handleResponse(response);
+    try {
+      const res = await client.post(`/analyze/${encodeURIComponent(username)}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
   },
 
-  /**
-   * Fetches paginated history list from local database
-   */
   async getProfiles({ page = 1, limit = 10, sortBy = 'created_at', order = 'DESC', search = '' }) {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-      sortBy,
-      order,
-      search: search.trim()
-    });
-
-    const response = await fetch(`${BASE_API_URL}/profiles?${params.toString()}`);
-    return handleResponse(response);
+    try {
+      const res = await client.get('/profiles', {
+        params: { page, limit, sortBy, order, search }
+      });
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
   },
 
-  /**
-   * Gets specific profile from database
-   */
   async getProfile(username) {
-    const response = await fetch(`${BASE_API_URL}/profiles/${encodeURIComponent(username)}`);
-    return handleResponse(response);
+    try {
+      const res = await client.get(`/profiles/${encodeURIComponent(username)}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
   },
 
-  /**
-   * Removes profile from database
-   */
   async deleteProfile(username) {
-    const response = await fetch(`${BASE_API_URL}/profiles/${encodeURIComponent(username)}`, {
-      method: 'DELETE'
-    });
-    return handleResponse(response);
+    try {
+      const res = await client.delete(`/profiles/${encodeURIComponent(username)}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  // Search History
+  async getHistory() {
+    try {
+      const res = await client.get('/history');
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async deleteHistoryItem(id) {
+    try {
+      const res = await client.delete(`/history/${id}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async clearHistory() {
+    try {
+      const res = await client.delete('/history');
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  // Favorites (Bookmarks)
+  async addFavorite(githubProfileId, username) {
+    try {
+      const res = await client.post('/favorites', { githubProfileId, username });
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async getFavorites() {
+    try {
+      const res = await client.get('/favorites');
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async removeFavorite(id) {
+    try {
+      const res = await client.delete(`/favorites/${id}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  // Comparisons
+  async saveComparison(profileId1, profileId2, aiSummary) {
+    try {
+      const res = await client.post('/comparisons', { profileId1, profileId2, aiSummary });
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async getComparisons() {
+    try {
+      const res = await client.get('/comparisons');
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async deleteComparison(id) {
+    try {
+      const res = await client.delete(`/comparisons/${id}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  // Dashboard API
+  async getDashboard() {
+    try {
+      const res = await client.get('/dashboard');
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  // AI Insights
+  async aiCompare(usernameA, usernameB) {
+    try {
+      const res = await client.post('/ai/compare', { usernameA, usernameB });
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async aiRegenerate(username) {
+    try {
+      const res = await client.post(`/ai/regenerate/${encodeURIComponent(username)}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
   }
 };
