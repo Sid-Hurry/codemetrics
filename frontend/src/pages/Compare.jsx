@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Trash } from 'lucide-react';
 import { api } from '../utils/api';
 
 export default function Compare({ addToast }) {
   const [profiles, setProfiles] = useState([]);
   const [selectedUserA, setSelectedUserA] = useState('');
   const [selectedUserB, setSelectedUserB] = useState('');
-  
+
   const [comparisonSummary, setComparisonSummary] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
-  
+
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
 
@@ -104,7 +103,7 @@ export default function Compare({ addToast }) {
       {/* Selectors card */}
       <div className="card">
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-          
+
           <div style={{ flex: 1, minWidth: '200px' }}>
             <label className="form-label">Developer A</label>
             <select
@@ -149,13 +148,13 @@ export default function Compare({ addToast }) {
       {/* Comparison Duel View */}
       {profileA && profileB ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
-          
+
           {/* Header Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
             <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 0 }}>
-              <img 
-                src={profileA.avatar_url} 
-                alt={profileA.username} 
+              <img
+                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
+                alt={profileA.username}
                 style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid var(--border-color)' }}
               />
               <div>
@@ -165,9 +164,9 @@ export default function Compare({ addToast }) {
             </div>
 
             <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: 0 }}>
-              <img 
-                src={profileB.avatar_url} 
-                alt={profileB.username} 
+              <img
+                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
+                alt={profileB.username}
                 style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid var(--border-color)' }}
               />
               <div>
@@ -294,8 +293,8 @@ export default function Compare({ addToast }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h4 style={{ fontWeight: '700', fontSize: '0.95rem', color: 'var(--text-primary)' }}>AI Duel Analysis Summary</h4>
               {!comparisonSummary && (
-                <button 
-                  onClick={handleGenerateAISummary} 
+                <button
+                  onClick={handleGenerateAISummary}
                   className="btn btn-primary"
                   style={{ width: 'auto', padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}
                   disabled={aiLoading}
@@ -304,7 +303,7 @@ export default function Compare({ addToast }) {
                 </button>
               )}
             </div>
-            
+
             {comparisonSummary ? (
               <p style={{ fontSize: '0.9rem', lineHeight: '1.6', color: 'var(--text-primary)', backgroundColor: '#ffffff', padding: '1rem', borderRadius: '6px', border: '1px solid #e0e7ff' }}>
                 {comparisonSummary}
@@ -349,16 +348,16 @@ export default function Compare({ addToast }) {
               </thead>
               <tbody>
                 {history.map((log) => (
-                  <tr 
-                    key={log.comparison_id} 
+                  <tr
+                    key={log.comparison_id}
                     onClick={() => handleSelectHistoryLog(log)}
                     style={{ cursor: 'pointer' }}
                   >
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <img 
-                          src={log.avatar_url1} 
-                          alt={log.username1} 
+                        <img
+                          src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
+                          alt={log.username1}
                           style={{ width: '20px', height: '20px', borderRadius: '50%' }}
                         />
                         <span style={{ fontWeight: '600' }}>@{log.username1}</span>
@@ -366,16 +365,16 @@ export default function Compare({ addToast }) {
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <img 
-                          src={log.avatar_url2} 
-                          alt={log.username2} 
+                        <img
+                          src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
+                          alt={log.username2}
                           style={{ width: '20px', height: '20px', borderRadius: '50%' }}
                         />
                         <span style={{ fontWeight: '600' }}>@{log.username2}</span>
                       </div>
                     </td>
                     <td>
-                      <div 
+                      <div
                         style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.8rem', color: 'var(--text-muted)' }}
                         title={log.ai_summary}
                       >
@@ -387,10 +386,12 @@ export default function Compare({ addToast }) {
                       <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDeleteLog(e, log.comparison_id); }}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px 8px', fontSize: '0.75rem', fontWeight: '500' }}
+                          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-error)'}
+                          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
                           title="Delete log"
                         >
-                          <Trash size={14} style={{ color: 'var(--text-muted)' }} />
+                          Delete
                         </button>
                       </div>
                     </td>

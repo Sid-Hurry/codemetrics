@@ -113,7 +113,7 @@ export default function VersusMode({ profiles = [] }) {
             {/* Developer A Card */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: 'var(--border-radius-md)' }}>
               <img
-                src={profileA.avatar_url}
+                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
                 alt={profileA.username}
                 style={{ width: '48px', height: '48px', borderRadius: '50%', border: '2px solid var(--accent-primary)' }}
               />
@@ -128,7 +128,7 @@ export default function VersusMode({ profiles = [] }) {
             {/* Developer B Card */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: 'var(--border-radius-md)' }}>
               <img
-                src={profileB.avatar_url}
+                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
                 alt={profileB.username}
                 style={{ width: '48px', height: '48px', borderRadius: '50%', border: '2px solid var(--accent-primary)' }}
               />

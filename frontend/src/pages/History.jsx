@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Trash, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { api } from '../utils/api';
 
 export default function HistoryPage({ addToast }) {
@@ -89,12 +89,10 @@ export default function HistoryPage({ addToast }) {
           <input
             type="text"
             className="form-input"
-            style={{ paddingLeft: '2rem' }}
             placeholder="Search profiles..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Search size={14} style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
         </div>
       </div>
 
@@ -134,12 +132,9 @@ export default function HistoryPage({ addToast }) {
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <img
-                            src={profile.avatar_url}
+                            src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
                             alt={profile.username}
                             style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid var(--border-color)' }}
-                            onError={(e) => {
-                                e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=32&h=32&q=80';
-                            }}
                           />
                           <div>
                             <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{profile.name || `@${profile.username}`}</div>
@@ -157,20 +152,24 @@ export default function HistoryPage({ addToast }) {
                       <td>
                         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
                           <button
-                            onClick={() => navigate(`/app/search?q=${profile.username}`)}
+                            onClick={() => navigate(`/app?q=${profile.username}`)}
                             className="btn"
-                            style={{ padding: '4px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', fontSize: '0.75rem', fontWeight: '500' }}
                             title="View Profile Stats"
                           >
-                            <Eye size={14} style={{ color: 'var(--text-secondary)' }} />
+                            <Eye style={{ width: '12px', height: '12px' }} />
+                            View
                           </button>
                           <button
                             onClick={() => handleDeleteProfile(profile.username)}
                             className="btn"
-                            style={{ padding: '4px', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', fontSize: '0.75rem', fontWeight: '500' }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-error)'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                             title="Delete stats"
                           >
-                            <Trash size={14} style={{ color: 'var(--text-secondary)' }} />
+                            <Trash2 style={{ width: '12px', height: '12px' }} />
+                            Delete
                           </button>
                         </div>
                       </td>
@@ -189,19 +188,19 @@ export default function HistoryPage({ addToast }) {
                 <div style={{ display: 'flex', gap: '0.35rem' }}>
                   <button
                     className="btn"
-                    style={{ width: 'auto', padding: '0.4rem 0.75rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    style={{ width: 'auto', padding: '0.4rem 0.75rem' }}
                     disabled={currentPage <= 1}
                     onClick={() => setPage(currentPage - 1)}
                   >
-                    <ChevronLeft size={14} /> Prev
+                    Prev
                   </button>
                   <button
                     className="btn"
-                    style={{ width: 'auto', padding: '0.4rem 0.75rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    style={{ width: 'auto', padding: '0.4rem 0.75rem' }}
                     disabled={currentPage >= totalPages}
                     onClick={() => setPage(currentPage + 1)}
                   >
-                    Next <ChevronRight size={14} />
+                    Next
                   </button>
                 </div>
               </div>

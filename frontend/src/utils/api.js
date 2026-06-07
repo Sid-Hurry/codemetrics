@@ -235,5 +235,24 @@ export const api = {
     } catch (err) {
       throw parseError(err);
     }
+  },
+
+  async getCareerInsights(username) {
+    try {
+      const res = await client.post(`/ai/career/${encodeURIComponent(username)}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
+  },
+
+  async regenerateCareerInsights(username) {
+    try {
+      const res = await client.post(`/ai/career/regenerate/${encodeURIComponent(username)}`);
+      return res.data;
+    } catch (err) {
+      throw parseError(err);
+    }
   }
 };
+

@@ -1,5 +1,6 @@
 const { pool } = require('../config/db');
 const aiService = require('../services/aiService');
+const careerInsightsService = require('../services/careerInsightsService');
 
 class AIController {
   /**
@@ -134,6 +135,179 @@ class AIController {
       next(error);
     }
   }
+
+  /**
+   * Retrieves or generates career insights for a developer.
+   * POST /api/ai/career/:username
+   */
+  async getCareerInsights(req, res, next) {
+    try {
+      const { username } = req.params;
+
+      if (!username) {
+        const err = new Error('Username parameter is required.');
+        err.status = 400;
+        return next(err);
+      }
+
+      // Check if profile exists in user's workspace
+      const selectQuery = 'SELECT * FROM github_profiles WHERE user_id = ? AND username = ?';
+      const [rows] = await pool.execute(selectQuery, [req.user.id, username.toLowerCase().trim()]);
+
+      if (rows.length === 0) {
+        const err = new Error('Profile not found in your workspace database. Run analysis first.');
+        err.status = 404;
+        return next(err);
+      }
+
+      const profile = rows[0];
+
+      // Check if insights are already cached
+      const insightQuery = 'SELECT * FROM career_insights WHERE user_id = ? AND github_profile_id = ?';
+      const [insightRows] = await pool.execute(insightQuery, [req.user.id, profile.id]);
+
+      if (insightRows.length > 0) {
+        const cachedInsight = insightRows[0];
+        // Parse JSON fields
+        try { cachedInsight.skill_gaps = JSON.parse(cachedInsight.skill_gaps); } catch (_) {}
+        try { cachedInsight.learning_roadmap = JSON.parse(cachedInsight.learning_roadmap); } catch (_) {}
+        try { cachedInsight.recommended_projects = JSON.parse(cachedInsight.recommended_projects); } catch (_) {}
+        try { cachedInsight.career_recommendations = JSON.parse(cachedInsight.career_recommendations); } catch (_) {}
+
+        return res.status(200).json({
+          success: true,
+          data: cachedInsight
+        });
+      }
+
+      // Generate new insights
+      console.log(`🤖 Generating Career Insights for developer: ${profile.username}`);
+      const insights = await careerInsightsService.generateCareerInsights(profile);
+
+      // Save to database
+      const insertQuery = `
+        INSERT INTO career_insights (
+          user_id, github_profile_id, current_level, career_path, 
+          skill_gaps, learning_roadmap, recommended_projects, career_recommendations, generated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW());
+      `;
+      await pool.execute(insertQuery, [
+        req.user.id,
+        profile.id,
+        insights.current_level,
+        insights.career_path,
+        JSON.stringify(insights.skill_gaps),
+        JSON.stringify(insights.learning_roadmap),
+        JSON.stringify(insights.recommended_projects),
+        JSON.stringify(insights.career_recommendations)
+      ]);
+
+      // Return generated details
+      return res.status(200).json({
+        success: true,
+        data: {
+          user_id: req.user.id,
+          github_profile_id: profile.id,
+          ...insights
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Force regenerates career insights for a developer.
+   * POST /api/ai/career/regenerate/:username
+   */
+  async regenerateCareerInsights(req, res, next) {
+    try {
+      const { username } = req.params;
+
+      if (!username) {
+        const err = new Error('Username parameter is required.');
+        err.status = 400;
+        return next(err);
+      }
+
+      // Check if profile exists in user's workspace
+      const selectQuery = 'SELECT * FROM github_profiles WHERE user_id = ? AND username = ?';
+      const [rows] = await pool.execute(selectQuery, [req.user.id, username.toLowerCase().trim()]);
+
+      if (rows.length === 0) {
+        const err = new Error('Profile not found in your workspace database. Run analysis first.');
+        err.status = 404;
+        return next(err);
+      }
+
+      const profile = rows[0];
+
+      // Force generate new insights
+      console.log(`🤖 Regenerating Career Insights for developer: ${profile.username}`);
+      const insights = await careerInsightsService.generateCareerInsights(profile);
+
+      // Update in database using UPSERT or UPDATE/INSERT
+      const checkQuery = 'SELECT id FROM career_insights WHERE user_id = ? AND github_profile_id = ?';
+      const [checkRows] = await pool.execute(checkQuery, [req.user.id, profile.id]);
+
+      if (checkRows.length > 0) {
+        // Update existing record
+        const updateQuery = `
+          UPDATE career_insights
+          SET 
+            current_level = ?,
+            career_path = ?,
+            skill_gaps = ?,
+            learning_roadmap = ?,
+            recommended_projects = ?,
+            career_recommendations = ?,
+            generated_at = NOW()
+          WHERE user_id = ? AND github_profile_id = ?;
+        `;
+        await pool.execute(updateQuery, [
+          insights.current_level,
+          insights.career_path,
+          JSON.stringify(insights.skill_gaps),
+          JSON.stringify(insights.learning_roadmap),
+          JSON.stringify(insights.recommended_projects),
+          JSON.stringify(insights.career_recommendations),
+          req.user.id,
+          profile.id
+        ]);
+      } else {
+        // Insert new record
+        const insertQuery = `
+          INSERT INTO career_insights (
+            user_id, github_profile_id, current_level, career_path, 
+            skill_gaps, learning_roadmap, recommended_projects, career_recommendations, generated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW());
+        `;
+        await pool.execute(insertQuery, [
+          req.user.id,
+          profile.id,
+          insights.current_level,
+          insights.career_path,
+          JSON.stringify(insights.skill_gaps),
+          JSON.stringify(insights.learning_roadmap),
+          JSON.stringify(insights.recommended_projects),
+          JSON.stringify(insights.career_recommendations)
+        ]);
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Career insights regenerated successfully.',
+        data: {
+          user_id: req.user.id,
+          github_profile_id: profile.id,
+          ...insights
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new AIController();
+

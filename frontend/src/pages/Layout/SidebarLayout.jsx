@@ -26,7 +26,7 @@ export default function SidebarLayout({ user, onLogout, addToast }) {
   };
 
   const navItems = [
-    { label: 'Search', path: '/app/search', icon: Search },
+    { label: 'Search', path: '/app', icon: Search },
     { label: 'Dashboard', path: '/app/dashboard', icon: LayoutDashboard },
     { label: 'History', path: '/app/history', icon: History },
     { label: 'Favorites', path: '/app/favorites', icon: Bookmark },
@@ -39,22 +39,31 @@ export default function SidebarLayout({ user, onLogout, addToast }) {
       {/* Sidebar navigation */}
       <aside className="sidebar">
         <div>
-          <div className="sidebar-logo">
-            <span className="sidebar-logo-text">CodeMetrics</span>
+          <div className="sidebar-logo" style={{ marginBottom: '1.5rem', padding: '0.5rem 0.75rem' }}>
+            <span className="sidebar-logo-text" style={{ fontSize: '1.15rem', fontWeight: '700', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+              CodeMetrics
+            </span>
           </div>
-
-          <nav className="sidebar-nav">
+          <nav className="sidebar-nav" style={{ marginTop: '1rem' }}>
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              const IconComponent = item.icon;
+              const isActive = location.pathname === item.path || (item.path === '/app' && location.pathname === '/app/');
+              const Icon = item.icon;
               return (
                 <Link
                   key={item.path}
                   to={item.path}
                   className={`sidebar-link ${isActive ? 'active' : ''}`}
+                  style={{ paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
                 >
-                  <IconComponent size={16} style={{ color: isActive ? 'var(--text-primary)' : 'var(--text-muted)' }} />
-                  <span>{item.label}</span>
+                  <Icon 
+                    style={{ 
+                      width: '16px', 
+                      height: '16px', 
+                      color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                      strokeWidth: 2
+                    }} 
+                  />
+                  {item.label}
                 </Link>
               );
             })}
@@ -66,12 +75,9 @@ export default function SidebarLayout({ user, onLogout, addToast }) {
           <div className="sidebar-user">
             <div className="sidebar-user-info">
               <img
-                src={user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=32&h=32&q=80'}
+                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
                 alt={user.name}
                 className="sidebar-user-avatar"
-                onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=32&h=32&q=80';
-                }}
               />
               <div className="sidebar-user-name" title={user.name || user.email}>
                 {user.name || user.email.split('@')[0]}

@@ -28,7 +28,7 @@ export default function Register({ onRegisterSuccess, addToast }) {
       localStorage.setItem('token', data.token);
       onRegisterSuccess(data.user);
       addToast('Account registered successfully.', 'success');
-      navigate('/app/search');
+      navigate('/app');
     } catch (err) {
       addToast(err.message, 'error');
     } finally {
@@ -96,17 +96,22 @@ export default function Register({ onRegisterSuccess, addToast }) {
 
         <div className="auth-divider">or signup with</div>
 
-        <button onClick={handleGoogleOAuth} className="btn btn-oauth" style={{ gap: '0.5rem' }}>
-          <svg style={{ width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.187 4.114-3.41 0-6.19-2.78-6.19-6.19s2.78-6.19 6.19-6.19c1.7 0 3.2.69 4.3 1.8l3.1-3.1C18.94 1.89 15.84 1 12.24 1 6.13 1 1.2 5.93 1.2 12s4.93 11 11.04 11c6.73 0 11.53-4.73 11.53-11.73 0-.7-.06-1.39-.19-1.985H12.24z" />
-          </svg>
-          Google
-        </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <button onClick={handleGoogleOAuth} className="btn btn-oauth" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.6rem 1rem' }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M20.64 12.2c0-.63-.06-1.25-.16-1.84H12v3.49h4.84a4.14 4.14 0 0 1-1.8 2.71v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z" />
+              <path d="M12 21c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.58-5.05-3.73H3.95v2.33C5.43 19.56 8.5 21 12 21z" />
+              <path d="M6.95 13.73A6 6 0 0 1 6.6 12c0-.6.1-1.2.25-1.77V7.9H3.95A9.92 9.92 0 0 0 3 12c0 1.48.32 2.89.95 4.16l3-2.43z" />
+              <path d="M12 6.38c1.32 0 2.5.45 3.44 1.35l2.58-2.59C16.47 3.6 14.43 3 12 3c-3.5 0-6.57 1.44-8.05 4.9l3.05 2.37C7.66 8.12 9.65 6.38 12 6.38z" />
+            </svg>
+            Google
+          </button>
 
-        <button onClick={handleGitHubOAuth} className="btn btn-oauth" style={{ gap: '0.5rem' }}>
-          <Github size={16} />
-          GitHub
-        </button>
+          <button onClick={handleGitHubOAuth} className="btn btn-oauth" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.6rem 1rem' }}>
+            <Github style={{ width: '16px', height: '16px' }} />
+            GitHub
+          </button>
+        </div>
 
         <p style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
           Already have an account? <Link to="/login" style={{ color: 'var(--accent-primary)', fontWeight: '600', textDecoration: 'none' }}>Log in</Link>

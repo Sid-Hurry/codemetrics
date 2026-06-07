@@ -11,13 +11,13 @@ export default function AuthCallback({ onLoginSuccess, addToast }) {
 
     if (token) {
       localStorage.setItem('token', token);
-      
+
       // Fetch authenticated session details
       api.getMe()
         .then((data) => {
           onLoginSuccess(data.user);
           addToast('Logged in successfully via OAuth.', 'success');
-          navigate('/app/search');
+          navigate('/app');
         })
         .catch((err) => {
           localStorage.removeItem('token');

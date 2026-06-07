@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  BrowserRouter as Router, 
-  Routes, 
-  Route, 
-  Navigate, 
-  useNavigate 
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate
 } from 'react-router-dom';
 
 // Layout & Auth Pages
@@ -22,6 +22,7 @@ import Favorites from './pages/Favorites';
 import Compare from './pages/Compare';
 import Settings from './pages/Settings';
 
+
 // Toast Notifications
 import Toast from './components/Toast';
 import { api } from './utils/api';
@@ -38,7 +39,7 @@ function ProtectedRoute({ user, loading, children }) {
       </div>
     );
   }
-  
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -103,39 +104,38 @@ export default function App() {
 
         <Routes>
           {/* Public Landing Page */}
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<Landing user={user} />} />
 
           {/* Public Authentication Routes */}
-          <Route 
-            path="/login" 
+          <Route
+            path="/login"
             element={
-              user ? <Navigate to="/app/search" replace /> : <Login onLoginSuccess={setUser} addToast={addToast} />
-            } 
+              user ? <Navigate to="/app" replace /> : <Login onLoginSuccess={setUser} addToast={addToast} />
+            }
           />
-          <Route 
-            path="/register" 
+          <Route
+            path="/register"
             element={
-              user ? <Navigate to="/app/search" replace /> : <Register onRegisterSuccess={setUser} addToast={addToast} />
-            } 
+              user ? <Navigate to="/app" replace /> : <Register onRegisterSuccess={setUser} addToast={addToast} />
+            }
           />
-          <Route 
-            path="/auth/callback" 
+          <Route
+            path="/auth/callback"
             element={
               <AuthCallback onLoginSuccess={setUser} addToast={addToast} />
-            } 
+            }
           />
 
-          {/* Protected Workspace Layout Routes */}
-          <Route 
-            path="/app" 
+          {/* Protected Workspace Layout Routes under /app */}
+          <Route
+            path="/app"
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <SidebarLayout user={user} onLogout={handleLogout} addToast={addToast} />
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="/app/search" replace />} />
-            <Route path="search" element={<SearchPage addToast={addToast} />} />
+            <Route index element={<SearchPage addToast={addToast} />} />
             <Route path="dashboard" element={<Dashboard addToast={addToast} />} />
             <Route path="history" element={<HistoryPage addToast={addToast} />} />
             <Route path="favorites" element={<Favorites addToast={addToast} />} />

@@ -97,3 +97,21 @@ CREATE TABLE IF NOT EXISTS comparisons (
   FOREIGN KEY (profile_id_1) REFERENCES github_profiles(id) ON DELETE CASCADE,
   FOREIGN KEY (profile_id_2) REFERENCES github_profiles(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 6. Career Insights table
+CREATE TABLE IF NOT EXISTS career_insights (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  github_profile_id INT NOT NULL,
+  current_level VARCHAR(100) NOT NULL,
+  career_path VARCHAR(255) NOT NULL,
+  skill_gaps JSON NULL,
+  learning_roadmap JSON NULL,
+  recommended_projects JSON NULL,
+  career_recommendations JSON NULL,
+  generated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (github_profile_id) REFERENCES github_profiles(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_user_profile_insight (user_id, github_profile_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

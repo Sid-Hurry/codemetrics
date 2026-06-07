@@ -9,4 +9,9 @@ router.use(authenticateJWT);
 router.post('/compare', aiController.compareDevelopers);
 router.post('/regenerate/:username', aiController.regenerateInsights);
 
+// Career Intelligence routes
+router.post('/career/:username', aiController.getCareerInsights);
+router.post('/career/regenerate/:username', aiController.regenerateCareerInsights);
+
 module.exports = router;
+

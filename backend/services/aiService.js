@@ -54,7 +54,7 @@ class AIService {
       - Profile Completeness: ${profile.profile_completeness_score}%
       
       Based on this data, provide:
-      1. A concise, professional summary (exactly 3-4 sentences, strictly professional, no emojis, no markdown formatting).
+      1. A concise, professional summary (exactly 3-4 sentences, strictly professional, you may use emojis, no markdown formatting).
       2. A skill rating out of 100 (integer) for the following categories: frontend, backend, mobile, devops, dataScience, openSource.
       3. A list of 3-5 concrete strengths.
       4. A list of 3-5 actionable improvement areas.
@@ -160,7 +160,7 @@ class AIService {
       - Developer Score: ${p2.developer_score}
       - Career Path: ${p2.ai_career_path || 'N/A'}
 
-      Write a comparative review summary (strictly 3-4 sentences, no markdown formatting, no emojis, no bullet points).
+      Write a comparative review summary (strictly 3-4 sentences, no markdown formatting, you may use emojis, no bullet points).
       Highlight which developer demonstrates stronger community outreach (followers/stars), who has greater repository contribution volume, and compare their technical focus based on language usage. Keep it objective, professional, and insightful.
 
       Return a JSON object:

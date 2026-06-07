@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Search, BarChart3, Compass, Briefcase, Check } from 'lucide-react';
 
-export default function Landing() {
+export default function Landing({ user }) {
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
 
   const handleCTA = () => {
-    if (token) {
-      navigate('/app/search');
+    if (user) {
+      navigate('/app');
     } else {
       navigate('/login');
     }
@@ -15,38 +15,41 @@ export default function Landing() {
 
   return (
     <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* 1. Header/Navbar */}
+      {/* Navbar */}
       <header style={{
         display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '1.5rem 2.5rem',
+        justifyContent: 'space-between',
+        padding: '1.25rem 2.5rem',
         borderBottom: '1px solid var(--border-color)',
+        backgroundColor: '#ffffff',
         position: 'sticky',
         top: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(8px)',
-        zIndex: 1000
+        zIndex: 100
       }}>
-        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-          CodeMetrics
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+            CodeMetrics
+          </span>
         </div>
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-          <a href="#features" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>Features</a>
-          <a href="#methodology" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>Methodology</a>
-          <a href="#compare" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500', textDecoration: 'none' }}>Candidate Duel</a>
+
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '0.9rem', fontWeight: '500' }}>
+          <a href="#features" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Features</a>
+          <a href="#methodology" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Methodology</a>
+          <a href="#career" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Growth Engine</a>
         </nav>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          {token ? (
-            <Link to="/app/search" className="btn btn-primary" style={{ padding: '0.5rem 1rem', width: 'auto', borderRadius: '6px' }}>
+          {user ? (
+            <Link to="/app" className="btn btn-primary" style={{ width: 'auto', padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}>
               Go to Workspace
             </Link>
           ) : (
             <>
-              <Link to="/login" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '600', textDecoration: 'none', padding: '0.5rem 1rem' }}>
+              <Link to="/login" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: '600' }}>
                 Sign In
               </Link>
-              <Link to="/register" className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', width: 'auto', borderRadius: '6px' }}>
+              <Link to="/register" className="btn btn-primary" style={{ width: 'auto', padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}>
                 Get Started
               </Link>
             </>
@@ -54,177 +57,178 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* 2. Hero Section */}
+      {/* Hero Section */}
       <section style={{
-        padding: '6rem 2rem 5rem 2rem',
+        padding: '5rem 2.5rem',
         textAlign: 'center',
-        maxWidth: '850px',
+        maxWidth: '900px',
         margin: '0 auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         gap: '1.5rem'
       }}>
-        <span style={{
-          backgroundColor: 'var(--bg-hover)',
-          color: 'var(--text-primary)',
-          fontSize: '0.75rem',
-          fontWeight: '700',
-          textTransform: 'uppercase',
-          padding: '0.35rem 0.75rem',
-          borderRadius: '20px',
-          letterSpacing: '1px'
-        }}>
-          GitHub Profile Analytics & AI Reviews
-        </span>
+        <div className="badge badge-indigo" style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Introducing Developer Growth Engine
+        </div>
         <h1 style={{
-          fontSize: '3.25rem',
+          fontSize: '3rem',
           fontWeight: '800',
           color: 'var(--text-primary)',
           lineHeight: '1.15',
-          letterSpacing: '-1.5px'
+          letterSpacing: '-1.5px',
+          margin: 0
         }}>
-          Understand Developer Impact, Quantified.
+          AI Career Intelligence & Project Recommendations
         </h1>
         <p style={{
           fontSize: '1.15rem',
           color: 'var(--text-secondary)',
           lineHeight: '1.6',
-          maxWidth: '650px'
+          margin: '0.5rem 0 1.5rem',
+          maxWidth: '720px'
         }}>
-          Query public repository parameters, calculate custom logarithmic developer rankings, and generate Gemini-powered candidate summaries instantly.
+          Evaluate your public GitHub profile metrics, calculate impact scores, mapping target career tracks, identifying skill gaps, and generating personalized capstone projects.
         </p>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <button onClick={handleCTA} className="btn btn-primary" style={{ padding: '0.75rem 1.75rem', width: 'auto', fontSize: '0.95rem', borderRadius: '8px' }}>
-            Start Analyzing Profiles
-          </button>
-          <a href="#features" className="btn" style={{ padding: '0.75rem 1.75rem', width: 'auto', fontSize: '0.95rem', borderRadius: '8px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-            Learn More
-          </a>
-        </div>
+
+        <button 
+          onClick={handleCTA}
+          className="btn btn-primary" 
+          style={{ width: 'auto', padding: '0.75rem 2rem', fontSize: '1rem', fontWeight: '600' }}
+        >
+          {user ? 'Open Dashboard' : 'Analyze Profile Now'}
+        </button>
       </section>
 
-      {/* Mock Dashboard Preview */}
-      <section style={{
-        maxWidth: '960px',
-        width: '100%',
-        margin: '0 auto 6rem auto',
-        padding: '0 2rem'
+      {/* Features Grid */}
+      <section id="features" style={{
+        padding: '5rem 2.5rem',
+        backgroundColor: '#fafafa',
+        borderTop: '1px solid var(--border-color)',
+        borderBottom: '1px solid var(--border-color)'
       }}>
-        <div style={{
-          border: '1px solid var(--border-color)',
-          borderRadius: '12px',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.04)',
-          overflow: 'hidden',
-          backgroundColor: '#ffffff'
-        }}>
-          <div style={{
-            backgroundColor: '#f8fafc',
-            borderBottom: '1px solid var(--border-color)',
-            padding: '0.75rem 1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
-            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></div>
-            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#10b981' }}></div>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace', marginLeft: '0.75rem' }}>http://localhost:5173/app/search?q=torvalds</span>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+              Built for Developer Self-Improvement
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '0.5rem' }}>
+              Advanced analytics and career maps, decoupled from simple messaging interfaces.
+            </p>
           </div>
-          <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* Mock Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.25rem' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '1.2rem', color: '#64748b' }}>LT</div>
-              <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)' }}>Linus Torvalds</h3>
-                <span style={{ color: 'var(--accent-primary)', fontSize: '0.85rem', fontWeight: '500' }}>@torvalds</span>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+            <div className="card" style={{ margin: 0, padding: '1.75rem', backgroundColor: '#ffffff' }}>
+              <div style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>
+                <Search style={{ width: '24px', height: '24px', strokeWidth: 1.5 }} />
               </div>
-              <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                <span className="badge badge-indigo" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem' }}>Developer Score: 98</span>
-              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                Profile Auditing
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                Calculate completeness scores and developer ranking tiers based on stars, followers, and code contributions.
+              </p>
             </div>
-            {/* Mock Metrics Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-              <div style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: '600' }}>Repositories</span>
-                <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>120</div>
+
+            <div className="card" style={{ margin: 0, padding: '1.75rem', backgroundColor: '#ffffff' }}>
+              <div style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>
+                <BarChart3 style={{ width: '24px', height: '24px', strokeWidth: 1.5 }} />
               </div>
-              <div style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: '600' }}>Total Stars</span>
-                <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>184.2k</div>
-              </div>
-              <div style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: '600' }}>Completeness</span>
-                <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)', marginTop: '4px' }}>90%</div>
-              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                Language Analytics
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                Deconstruct programming language footprints with interactive ratio distributions and repository weight checks.
+              </p>
             </div>
-            {/* Mock AI summary */}
-            <div style={{ backgroundColor: '#f5f3ff', border: '1px solid #c7d2fe', padding: '1rem', borderRadius: '8px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#6d28d9', textTransform: 'uppercase', display: 'block', marginBottom: '0.25rem' }}>Gemini AI Insight</span>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: '1.5' }}>
-                Linus Torvalds is an exemplary Open Source Pioneer with a focus on system engineering. Possesses legendary influence, leading the Linux kernel and Git revision architectures. Dominates lower-level infrastructure, highlighting mastery in backend optimizations.
+
+            <div className="card" style={{ margin: 0, padding: '1.75rem', backgroundColor: '#ffffff' }}>
+              <div style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>
+                <Compass style={{ width: '24px', height: '24px', strokeWidth: 1.5 }} />
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                Career Trajectories
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                Let Gemini classify your optimal path (e.g. Frontend, Backend, DevOps, Data) along with readiness confidence levels.
+              </p>
+            </div>
+
+            <div className="card" style={{ margin: 0, padding: '1.75rem', backgroundColor: '#ffffff' }}>
+              <div style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>
+                <Briefcase style={{ width: '24px', height: '24px', strokeWidth: 1.5 }} />
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                Capstone Planning
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                Unlock 5 curated developer projects custom-matched to bridge your technology skill gaps.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. Features Section */}
-      <section id="features" style={{ backgroundColor: '#f8fafc', padding: '5rem 2rem', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
-        <div style={{ maxWidth: '960px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.75px' }}>Features Built for Recruiters & Leads</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '0.5rem' }}>Eschewing vanity metrics for real, balanced performance data.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-            <div className="card" style={{ padding: '2rem', marginBottom: 0 }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.75rem' }}>Logarithmic Rating System</h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Calculates weighted rankings based on followers, forks, star outputs, and repository distributions. High follower counts scale logarithmically to prevent ranking skew.
-              </p>
-            </div>
-            <div className="card" style={{ padding: '2rem', marginBottom: 0 }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.75rem' }}>Gemini AI Insights Engine</h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Generates a structured developer review profile, listing strengths, weaknesses, skill assessment radars, and predicted career path matches instantly.
-              </p>
-            </div>
-            <div className="card" style={{ padding: '2rem', marginBottom: 0 }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.75rem' }}>Side-by-Side Candidate Duel</h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                Select any two analyzed profiles in your workspace and compare their metrics side-by-side. Includes a custom Gemini narrative comparing their technical styles.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Preview Section */}
+      <section id="career" style={{ padding: '5rem 2.5rem', maxWidth: '1100px', margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '3rem', alignItems: 'center' }}>
+          <div>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.5px', lineHeight: '1.2' }}>
+              An Intelligent Career Advisor, Not a Chatbot
+            </h2>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginTop: '1rem' }}>
+              Unlike generic LLM assistants, CodeMetrics compiles structured reports. It lists specific gaps, assigns custom timelines, and details 5 capstone project stacks so you can build real repositories.
+            </p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--text-primary)', display: 'inline-flex', marginTop: '0.2rem' }}>
+                  <Check style={{ width: '16px', height: '16px', strokeWidth: 2.5 }} />
+                </span>
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Skill Gap Mapping</h4>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Identify high-priority technologies to master.</p>
+                </div>
+              </div>
 
-      {/* 4. Methodology Section */}
-      <section id="methodology" style={{ padding: '5rem 2rem' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.75px', marginBottom: '1.5rem' }}>
-            Our Ranking Methodology
-          </h2>
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.7', marginBottom: '2.5rem' }}>
-            Traditional scoring is broken. Popular developers with millions of stargazers dominate, while active contributors get buried. CodeMetrics normalizes rankings using logarithmic formulas:
-          </p>
-          <div style={{
-            backgroundColor: '#f1f5f9',
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--text-primary)', display: 'inline-flex', marginTop: '0.2rem' }}>
+                  <Check style={{ width: '16px', height: '16px', strokeWidth: 2.5 }} />
+                </span>
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Targeted Capstone Spec</h4>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>5 detailed custom specs ready to implement.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="methodology" style={{
             border: '1px solid var(--border-color)',
-            padding: '1.5rem 2rem',
-            borderRadius: '10px',
-            fontFamily: 'monospace',
-            fontSize: '1rem',
-            fontWeight: '600',
-            color: 'var(--accent-primary)',
-            display: 'inline-block',
-            marginBottom: '2.5rem'
+            borderRadius: '8px',
+            padding: '1.5rem',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
           }}>
-            Score = Log10(Followers + 1) * 25 + Log10(Stars + 1) * 30 + Repos * 0.5
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-primary)' }}>MOCK_PROFILE_insights</span>
+              <span className="badge badge-indigo" style={{ fontSize: '0.7rem' }}>CONFIDENCE: 92%</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ height: '12px', width: '40%', backgroundColor: '#f1f5f9', borderRadius: '4px' }}></div>
+              <div style={{ height: '35px', width: '100%', backgroundColor: '#f8fafc', borderRadius: '4px', border: '1px dashed var(--border-color)', display: 'flex', alignItems: 'center', paddingLeft: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                Target: Backend Engineer
+              </div>
+              <div style={{ height: '8px', width: '100%', backgroundColor: '#f1f5f9', borderRadius: '4px' }}></div>
+              <div style={{ height: '8px', width: '90%', backgroundColor: '#f1f5f9', borderRadius: '4px' }}></div>
+              <div style={{ height: '8px', width: '75%', backgroundColor: '#f1f5f9', borderRadius: '4px' }}></div>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <span style={{ padding: '0.15rem 0.4rem', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.65rem', color: 'var(--text-muted)' }}>Docker</span>
+                <span style={{ padding: '0.15rem 0.4rem', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.65rem', color: 'var(--text-muted)' }}>Redis</span>
+                <span style={{ padding: '0.15rem 0.4rem', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.65rem', color: 'var(--text-muted)' }}>MySQL</span>
+              </div>
+            </div>
           </div>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-            This ensures that a profile's rating reflects actual repository outputs alongside general developer community influence.
-          </p>
         </div>
       </section>
 
@@ -232,13 +236,12 @@ export default function Landing() {
       <footer style={{
         marginTop: 'auto',
         borderTop: '1px solid var(--border-color)',
-        padding: '2.5rem 2rem',
+        padding: '2rem',
         textAlign: 'center',
-        backgroundColor: '#f8fafc'
+        fontSize: '0.85rem',
+        color: 'var(--text-muted)'
       }}>
-        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          &copy; {new Date().getFullYear()} CodeMetrics Developer Analytics Platform. All rights reserved.
-        </div>
+        <div>&copy; 2026 CodeMetrics Growth Platform. All rights reserved.</div>
       </footer>
     </div>
   );

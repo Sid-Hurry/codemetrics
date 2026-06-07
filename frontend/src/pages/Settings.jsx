@@ -22,12 +22,9 @@ export default function Settings({ user }) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.5rem' }}>
             <img
-              src={user.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=48&h=48&q=80'}
+              src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
               alt={user.name}
               style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid var(--border-color)', objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=48&h=48&q=80';
-              }}
             />
             <div>
               <h4 style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '1.05rem' }}>{user.name || 'User'}</h4>

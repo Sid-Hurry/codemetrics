@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Trash } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { api } from '../utils/api';
 
 export default function Favorites({ addToast }) {
@@ -51,9 +51,9 @@ export default function Favorites({ addToast }) {
       ) : favorites.length > 0 ? (
         <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
           {favorites.map((fav) => (
-            <div 
-              key={fav.favorite_id} 
-              className="card" 
+            <div
+              key={fav.favorite_id}
+              className="card"
               style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginBottom: 0, height: '100%', border: '1px solid var(--border-color)', transition: 'var(--transition)' }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
               onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
@@ -61,12 +61,9 @@ export default function Favorites({ addToast }) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                   <img
-                    src={fav.avatar_url}
+                    src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"
                     alt={fav.username}
                     style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid var(--border-color)', objectFit: 'cover' }}
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=32&h=32&q=80';
-                    }}
                   />
                   <div>
                     <h4 style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
@@ -94,21 +91,23 @@ export default function Favorites({ addToast }) {
               {/* Actions row */}
               <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem' }}>
                 <button
-                  onClick={() => navigate(`/app/search?q=${fav.username}`)}
+                  onClick={() => navigate(`/app?q=${fav.username}`)}
                   className="btn btn-primary"
-                  style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', flexGrow: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '0.4rem 0.75rem', fontSize: '0.8rem', flexGrow: 1 }}
                 >
-                  <Eye size={14} /> View Details
+                  <Eye style={{ width: '14px', height: '14px' }} />
+                  View Details
                 </button>
                 <button
                   onClick={(e) => handleRemoveFavorite(e, fav.favorite_id)}
                   className="btn"
-                  style={{ padding: '4px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-error)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                   title="Remove bookmark"
                 >
-                  <Trash size={14} style={{ color: 'var(--text-secondary)' }} />
+                  <Trash2 style={{ width: '14px', height: '14px' }} />
+                  Remove
                 </button>
               </div>
 

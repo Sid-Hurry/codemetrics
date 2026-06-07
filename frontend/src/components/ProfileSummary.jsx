@@ -38,7 +38,7 @@ const ProfileSummary = React.memo(({ profile, addToast }) => {
         <div className="profile-card-header">
           <div className="profile-avatar-wrapper">
             <img 
-              src={profile.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80'} 
+              src={profile.avatar_url || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M18 21a6 6 0 0 0-12 0'/></svg>"} 
               alt={profile.name || profile.username} 
               className="profile-avatar"
             />
