@@ -25,6 +25,9 @@ dotenv.config();
 
 const app = express();
 
+// Enable trust proxy for secure SSL redirects behind Railway proxy
+app.set('trust proxy', 1);
+
 // 1. Security headers & CORS settings
 app.use(helmet({
   contentSecurityPolicy: false // Allow swagger assets to load cleanly

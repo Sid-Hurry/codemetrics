@@ -106,7 +106,8 @@ if (githubClientId && githubClientSecret && githubClientSecret !== 'placeholder_
         clientID: githubClientId,
         clientSecret: githubClientSecret,
         callbackURL: '/api/auth/github/callback',
-        scope: ['user:email'] // Request email access
+        scope: ['user:email'], // Request email access
+        proxy: true
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
