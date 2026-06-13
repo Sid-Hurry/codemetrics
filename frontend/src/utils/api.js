@@ -48,6 +48,7 @@ const parseError = (err) => {
 
 // 4. API Endpoints Map
 export const api = {
+  baseURL,
   // Authentication
   async register(name, email, password) {
     try {
