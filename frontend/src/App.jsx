@@ -9,7 +9,12 @@ import {
 
 // Layout & Auth Pages
 import SidebarLayout from './pages/Layout/SidebarLayout';
+import PublicLayout from './pages/Layout/PublicLayout';
 import Landing from './pages/Landing';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import AuthCallback from './pages/Auth/AuthCallback';
@@ -25,6 +30,7 @@ import Settings from './pages/Settings';
 
 // Toast Notifications
 import Toast from './components/Toast';
+import ScrollToTop from './components/ScrollToTop';
 import { api } from './utils/api';
 
 // Route protection wrapper
@@ -89,6 +95,7 @@ export default function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-app)' }}>
         {/* Toast alerts layer */}
         <div className="toast-container" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -103,8 +110,14 @@ export default function App() {
         </div>
 
         <Routes>
-          {/* Public Landing Page */}
-          <Route path="/" element={<Landing user={user} />} />
+          {/* Public Pages Layout Group */}
+          <Route element={<PublicLayout user={user} />}>
+            <Route path="/" element={<Landing user={user} />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact addToast={addToast} />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+          </Route>
 
           {/* Public Authentication Routes */}
           <Route
